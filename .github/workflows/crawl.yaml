@@ -38,7 +38,7 @@ jobs:
       - name: 🚀 Start the test app
         id: start-app
         run: |
-          node -r @contrast/agent build/app > ../app.log 2>&1 &
+          node -r @contrast/agent build/app > app.log 2>&1 &
           test_app_pid=$!
           echo "test_app_pid = ${test_app_pid}"
           echo "test_app_pid=$test_app_pid" >> $GITHUB_OUTPUT
@@ -55,6 +55,7 @@ jobs:
             echo "Server ready"
           else
             echo "Timeout waiting for server."
+            exit 1
           fi
 
       - name: 🧑‍💻 Make an App Request
