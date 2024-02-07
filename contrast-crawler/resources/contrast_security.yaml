@@ -1,0 +1,21 @@
+api:
+  # read from repo secrets and set as env vars
+  # CONTRAST__API__URL
+  # CONTRAST__API__USER_NAME
+  # CONTRAST__API__API_KEY
+  # CONTRAST__API__SERVICE_KEY
+agent:
+  diagnostics:
+    quiet: true
+  logger:
+    level: INFO
+    stdout: true
+    stderr: false
+assess:
+  enable: true
+protect:
+  enable: false
+application:
+  name: crawled-juice-shop-ci
+server:
+  name: github-runner

@@ -18,3 +18,56 @@ jobs:
     steps:
       - name: ⬇️ Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+
+      # so we don't have unexpected version creep
+      - name: 🛠️ Install node
+        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8  # v4.0.1
+        with: 
+          node-version: 18
+
+      - name: 📦 Install App Dependencies
+        run: npm install
+
+      - name: ⚙️ Instrument App with Assess
+        run: npm install @contrast/agent
+
+      - name: 🪛 Install Agent Configs
+        run: |
+          cp ./contrast-crawler/resources/contrast_security.yaml ./contrast_security.yaml
+
+      - name: 🚀 Start the test app
+        id: start-app
+        run: |
+          node -r @contrast/agent build/app > ../app.log 2>&1 &
+          test_app_pid=$!
+          echo "test_app_pid = ${test_app_pid}"
+          echo "test_app_pid=$test_app_pid" >> $GITHUB_OUTPUT
+        env:
+           CONTRAST__API__URL: ${{ vars.CONTRAST__API__URL }}
+           CONTRAST__API__USER_NAME: ${{ vars.CONTRAST__API__USER_NAME }}
+           CONTRAST__API__API_KEY: ${{ secrets.CONTRAST__API__API_KEY }}
+           CONTRAST__API__SERVICE_KEY: ${{ secrets.CONTRAST__API__SERVICE_KEY }}
+
+      - name: 🔭 Wait for it to be ready
+        run: |
+          if grep -q "Server listening on port" <(timeout 60s tail -f app.log)
+          then  
+            echo "Server ready"
+          else
+            echo "Timeout waiting for server."
+          fi
+
+      - name: 🧑‍💻 Make an App Request
+        # to register the app (if necessary) and wait for TS to receive and process
+        run: |
+          curl http://localhost:3000
+          sleep 60s
+          cat app.log
+
+      - name: 🪓 Kill the server
+        run: |
+          test_app_pid=${{ steps.start-app.outputs.test_app_pid }}
+          echo "test_app_pid=$test_app_pid"
+          echo "Killing server."
+          kill $test_app_pid
+        

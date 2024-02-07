@@ -1,0 +1,18 @@
+user_api:
+  # read from repo secrets and set as env vars
+  # CONTRAST__CRAWLER__USER_API__URL
+  # CONTRAST__CRAWLER__USER_API__ORG_ID
+  # CONTRAST__CRAWLER__USER_API__USER_NAME
+  # CONTRAST__CRAWLER__USER_API__API_KEY
+  # CONTRAST__CRAWLER__USER_API__SERVICE_KEY
+application:
+  name: crawled-juice-shop-ci
+  url: http://localhost:3000
+authentication:
+  enabled: true
+  auth_script_file: ./resources/juice-shop-auth.js
+  no_logged_out_indicator: true
+  keep_auth_script: true
+crawl_config:
+  max_concurrency: 10
+  
