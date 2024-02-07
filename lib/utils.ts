@@ -143,12 +143,16 @@ export const randomHexString = (length: number): string => {
   return crypto.randomBytes(Math.ceil(length / 2)).toString('hex').slice(0, length)
 }
 
-export const disableOnContainerEnv = (): boolean => {
-  return (isDocker() || isGitpod() || isHeroku()) && !(config.get('challenges.safetyOverride'))
+export const disableOnContainerEnv = () => {
+  return (isDocker() || isGitpod() || isHeroku()) && (config.get('challenges.safetyMode') !== 'off')
 }
 
 export const disableOnWindowsEnv = (): boolean => {
   return isWindows()
+}
+
+export const disableOnFlagSet = () => {
+  return !(config.get('challenges.safetyMode') !== 'on')
 }
 
 export const determineDisabledEnv = (disabledEnv: string | string[] | undefined) => {
@@ -159,7 +163,7 @@ export const determineDisabledEnv = (disabledEnv: string | string[] | undefined)
   } else if (isWindows()) {
     return disabledEnv != null && (disabledEnv === 'Windows' || disabledEnv?.includes('Windows')) ? 'Windows' : null
   } else if (isGitpod()) {
-    return disabledEnv != null && (disabledEnv === 'Gitpod' || disabledEnv?.includes('Gitpod')) ? 'Gitpod' : null
+    return disabledEnv && (disabledEnv === 'Gitpod' || disabledEnv.includes('Gitpod')) ? 'Gitpod' : null
   }
   return null
 }

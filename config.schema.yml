@@ -117,8 +117,8 @@ challenges:
     type: string
   xssBonusPayload:
     type: string
-  safetyOverride:
-    type: boolean
+  safetyMode:
+    type: string
   showFeedbackButtons:
     type: boolean
 hackingInstructor:
