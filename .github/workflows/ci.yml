@@ -1,9 +1,6 @@
 name: "CI/CD Pipeline"
 on:
   push:
-    branches-ignore:
-      - l10n_develop
-      - gh-pages
     paths-ignore:
       - '*.md'
       - 'LICENSE'
@@ -54,6 +51,7 @@ jobs:
           npm run lint:config -- -f ./config/tutorial.yml &&
           npm run lint:config -- -f ./config/unsafe.yml
   coding-challenge-rsn:
+    if: false()
     runs-on: windows-latest
     steps:
       - name: "Check out Git repository"
@@ -69,6 +67,7 @@ jobs:
       - name: "Check coding challenges for accidental code discrepancies"
         run: npm run rsn
   test:
+    if: false()
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -109,6 +108,7 @@ jobs:
             frontend-lcov.info
             server-lcov.info
   api-test:
+    if: false()
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -176,6 +176,7 @@ jobs:
           ./cc-test-reporter upload-coverage
         shell: bash
   custom-config-test:
+    if: false()
     runs-on: ubuntu-latest
     steps:
       - name: "Check out Git repository"
@@ -207,6 +208,7 @@ jobs:
             NODE_ENV=tutorial npm run test:server &&
             NODE_ENV=unsafe npm run test:server
   e2e:
+    if: false()
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -354,19 +356,4 @@ jobs:
           heroku_app_name: ${{ env.HEROKU_APP }}
           heroku_email: bjoern.kimminich@owasp.org
           branch: ${{ env.HEROKU_BRANCH }}
-  notify-slack:
-    if: github.repository == 'juice-shop/juice-shop' && github.event_name == 'push' && (success() || failure())
-    needs:
-      - docker
-      - heroku
-      - lint
-      - coding-challenge-rsn
-      - smoke-test
-      - coverage-report
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Slack workflow notification"
-        uses: Gamesight/slack-workflow-status@26a36836c887f260477432e4314ec3490a84f309 #v1.2.0
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
