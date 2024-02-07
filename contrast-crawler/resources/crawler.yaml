@@ -10,7 +10,7 @@ application:
   url: http://localhost:3000
 authentication:
   enabled: true
-  auth_script_file: ./resources/juice-shop-auth.js
+  auth_script_file: ./contrast-crawler/resources/juice-shop-auth.js
   no_logged_out_indicator: true
   keep_auth_script: true
 crawl_config:
