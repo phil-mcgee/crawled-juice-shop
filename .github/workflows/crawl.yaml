@@ -65,6 +65,27 @@ jobs:
           sleep 60s
           cat app.log
 
+      - name: 📦 Install the Contrast Crawler
+        run: npm install -g @contrast/crawler
+
+      - name: 📝 Register a user
+        run: npx @contrast/crawler ./contrast-crawler/resources/crawler.yaml script=./contrast-crawler/resources/juice-shop-prep.js
+        env:
+           CONTRAST__CRAWLER__USER_API__URL:          ${{ vars.CONTRAST__CRAWLER__USER_API__URL }}
+           CONTRAST__CRAWLER__USER_API__ORG_ID:       ${{ vars.CONTRAST__CRAWLER__USER_API__ORG_ID }}
+           CONTRAST__CRAWLER__USER_API__USER_NAME:    ${{ vars.CONTRAST__CRAWLER__USER_API__USER_NAME }}
+           CONTRAST__CRAWLER__USER_API__API_KEY:      ${{ secrets.CONTRAST__CRAWLER__USER_API__API_KEY }}
+           CONTRAST__CRAWLER__USER_API__SERVICE_KEY:  ${{ secrets.CONTRAST__CRAWLER__USER_API__SERVICE_KEY }}
+
+      - name: 🕷️ Crawl the app
+        run: npx @contrast/crawler ./contrast-crawler/resources/crawler.yaml
+        env:
+           CONTRAST__CRAWLER__USER_API__URL:          ${{ vars.CONTRAST__CRAWLER__USER_API__URL }}
+           CONTRAST__CRAWLER__USER_API__ORG_ID:       ${{ vars.CONTRAST__CRAWLER__USER_API__ORG_ID }}
+           CONTRAST__CRAWLER__USER_API__USER_NAME:    ${{ vars.CONTRAST__CRAWLER__USER_API__USER_NAME }}
+           CONTRAST__CRAWLER__USER_API__API_KEY:      ${{ secrets.CONTRAST__CRAWLER__USER_API__API_KEY }}
+           CONTRAST__CRAWLER__USER_API__SERVICE_KEY:  ${{ secrets.CONTRAST__CRAWLER__USER_API__SERVICE_KEY }}
+
       - name: 🪓 Kill the server
         run: |
           test_app_pid=${{ steps.start-app.outputs.test_app_pid }}
