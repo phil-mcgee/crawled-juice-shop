@@ -11,15 +11,15 @@ jobs:
   crawl:
     permissions:
       contents: read
-      issues: read
-      checks: write
     name: 🕷️ Crawl
     runs-on: ubuntu-latest
     steps:
       - name: ⬇️ Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
 
-      # so we don't have unexpected version creep
+      # GitHub's Ubuntu runner images already include node.js, but
+      # we install it here so we'll be running with a consistent
+      # know version.
       - name: 🛠️ Install node
         uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8  # v4.0.1
         with: 
@@ -65,6 +65,11 @@ jobs:
           sleep 60s
           cat app.log
 
+      # If the application under test were not a node.js app
+      # Then we would include something like the step
+      #   🛠️ Install node
+      # here to support the crawler application
+
       - name: 📦 Install the Contrast Crawler
         run: npm install -g @contrast/crawler
 
@@ -85,6 +90,13 @@ jobs:
            CONTRAST__CRAWLER__USER_API__USER_NAME:    ${{ vars.CONTRAST__CRAWLER__USER_API__USER_NAME }}
            CONTRAST__CRAWLER__USER_API__API_KEY:      ${{ secrets.CONTRAST__CRAWLER__USER_API__API_KEY }}
            CONTRAST__CRAWLER__USER_API__SERVICE_KEY:  ${{ secrets.CONTRAST__CRAWLER__USER_API__SERVICE_KEY }}
+
+      - name: ⬆️ Upload crawl artifacts
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3  # v4.3.1
+        with:
+          name: Crawl Artifacts
+          path: storage/**/*
+          retention-days: 14
 
       - name: 🪓 Kill the server
         run: |
